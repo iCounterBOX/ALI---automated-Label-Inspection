@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="image">
+    <file>images/webcamMini.png</file>
+    <file>images/cam2.JPG</file>
+    <file>images/green.JPG</file>
+    <file>images/red.JPG</file>
+    <file>images/red.JPG</file>
+    <file>images/yellow.JPG</file>
+    <file>images/preview.png</file>
+    <file>images/webcam.png</file>
+    <file>images/webcam_icon.ico</file>
+  </qresource>
+</RCC>
