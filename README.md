@@ -29,8 +29,6 @@ See also [https://github.com/iCounterBOX/Paddle-OCR-on-Webcam ](https://github.c
 
 WIN10, CUDA 11.2 and cuDNN8​
 
-available here as an .EXE . It comes with all Python dependencies and can be used immediately.
-
 **YouTube:**
 
 [**https://www.youtube.com/watch?v=cS_orV-vrYg**](https://www.youtube.com/watch?v=cS_orV-vrYg)
