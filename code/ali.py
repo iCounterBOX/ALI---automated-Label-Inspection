@@ -28,43 +28,34 @@ NICE
 13.06.24:
     ToDo - self._df_RefStringData noch den genauen workflow definieren wann ein mess-Zyklus beendet ist.
     wann denn DF zurück setzen..auch die buttons neu verriegeln etc
+22.07.24:
+    failTimer e.g 10 sec.. if exeeded: automatic failure protocoll
 
 """
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtWidgets import (
-    QMessageBox, 
-    QListWidget, 
-    QPushButton, 
-    QHeaderView,
-    QComboBox, 
-    QCheckBox, 
-    QLabel,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
-    )
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QImage
-
-
 
 import image_rc  #   5_experimental\ai\py39pa>   pyrcc5 -o image_rc.py image.qrc
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-import cv2, imutils
+import cv2
 import sys
 import traceback
 import logging
-import random
-from matplotlib import pyplot as plt
+#import random
+#from matplotlib import pyplot as plt
 from pathlib import Path
+from configparser import ConfigParser
 
 import paddle  # drin lassen? auto-py-to-exe?
 from paddleocr import PaddleOCR
 
 from classALI import c_ocr 
 cocr = c_ocr()   # class ocr
+config = ConfigParser()
  
 try:     
     ocrModel = PaddleOCR( use_angle_cls =True, lang = 'en', use_gpu=True, det_limit_side_len=3456)    
@@ -109,6 +100,12 @@ _BaseDir = os.getcwd()
 _UI_FILE = os.path.join(_BaseDir,"ali.ui" )
 logging.info(cocr.dt() + 'UI file: ' + _UI_FILE)
 
+_myIniFile = os.getcwd() + "\config.ini"
+logging.info(cocr.dt() + 'inifile : ' + _myIniFile)
+
+
+
+
 class MainWindow_ALI(QtWidgets.QMainWindow):    
     def __init__(self):
         #super(MainWindow_ALI,self).__init__()
@@ -124,20 +121,72 @@ class MainWindow_ALI(QtWidgets.QMainWindow):
         
        
         
+        # INI File
+        
+        '''
+        Config file:
+        https://stackoverflow.com/questions/19078170/python-how-would-you-save-a-simple-settings-config-file
+        standard is webcam 0.. on NB the inbuild cam..1 is normally the external USB cam
+        [main]
+        webcamnr = 1
+        key2 = 4 laterUse
+        key3 = 4 futureUse
+        '''
+        self._camNr = self.lineEdit_camNr.text()
+        self.failTimer = self.lineEdit_timer.text()
+        
+        try:    
+            if not config.read(_myIniFile):
+                with open(_myIniFile,'a'): pass  # if not exist..create
+                config.read(_myIniFile)
+                config.add_section('main')
+                config.set('main', 'webCamNr', '1')
+                config.set('main', 'failTimer', '10')
+                config.set('main', 'refList', 'put list here') #https://stackoverflow.com/questions/44778/how-would-you-make-a-comma-separated-string-from-a-list-of-strings
+                config.set('main', 'key3', '4 futureUse')  
+                with open('config.ini', 'w') as f:
+                    config.write(f)   
+            if config.read(_myIniFile):
+                self._camNr = config.getint('main', 'webCamNr')
+                self.failTimer = config.getint('main', 'failTimer')
+                print("webCamNr : " + str(self._camNr)) 
+                print("failTimer : " + str(self.failTimer)) 
+                #pre initialize camNr and Timer
+                self.lineEdit_camNr.setText(str(self._camNr))       # in JEDEM Fall müssen die beiden Felder für cam u timer einen gültigen wert haben
+                self.lineEdit_timer.setText(str(self.failTimer))
+                
+                   
+        except Exception as e:
+             print(e)        
+             self._camNr = 0
+             logging.error(traceback.format_exc())     
+             pass
+        logging.info(cocr.dt() + 'Camera Nr __ ' + str(self._camNr) + ' __ is selected')
+        
+        
+        
         #mit self in UI muss nach den elementen in der UI nicht mehr gesucht werden :-)           
         
-        self.pushButton_StartStopCam.clicked.connect(self.loadImage)
+        #self.pushButton_StartStopCam.clicked.connect(self.loadImage)
+        # set control_bt callback clicked  function
+        '''
+        self.pushButton_StartStopCam.clicked.connect(self.controlTimer)
         self.pushButton_StartStopCam.setText('START CAM')  
         self.pushButton_StartStopCam.setEnabled(True)
+        '''
+        self.pushButton_StartStopCam.hide() # brauchen start cam nicht mehr
         
         self.pushButton_runTest.clicked.connect(self.enableCamForNextDetection) # RUN
-        self.pushButton_runTest.setText('RUN')  
-        self.pushButton_runTest.setEnabled(False)
+        self.pushButton_runTest.setText('First select Test-Label  and click me (RUN)')  
+        self.pushButton_runTest.setEnabled(True)
         
+        '''
         self.pushButton_save.clicked.connect(self.saveProtocol )
         self.pushButton_save.setStyleSheet('background-color: red;')
         self.pushButton_save.setText('FAIL')         
         self.pushButton_save.setEnabled(False)
+        '''
+        self.pushButton_save.hide() # wegen failure timer unnötig geworden
         
         self.listWidget_checkOK.doubleClicked.connect(self.openDocumentInWindows_OKs)
         self.listWidget_checkOK.setSortingEnabled(True)
@@ -169,11 +218,11 @@ class MainWindow_ALI(QtWidgets.QMainWindow):
         self._objImgWindowWidth = 640
         self._objImgWindowHeight = 480
         
-        
+        self.i_sec = 0
         self.fps=0
         self.started = False
         self.frameCnt = 0   
-        self.stopCauseApproved = False
+        self.stopCauseApproved = True
         self._imgPaddleOCR = cv2
        
        
@@ -193,6 +242,60 @@ class MainWindow_ALI(QtWidgets.QMainWindow):
         self.listPositivReports()
         self.listNegativReports()
         self.previewSelectedListObject()
+        
+        # create a timer  * TIMER 
+        self.timer = QtCore.QTimer()
+        # set timer timeout callback function
+        self.timer.timeout.connect(self.viewCam)
+        self.controlTimer()  # cam soll gleich starten .. zeitgleich die labelauswahl  ..los gehts
+        
+        
+        self.timer2 = QTimer()  # failure timer..zeigt im lcd die sekunden an
+        self.timer2.setInterval(1000)
+        self.timer2.timeout.connect(self.updateLCD)  
+        self.timer2.stop() 
+    
+    # lcd zeigt die secunden an
+    def updateLCD(self):
+        self.i_sec += 1
+        self.lcdNumber_lcd.display(self.i_sec)
+        self.lcdNumber_lcd.repaint()
+        
+    # start/stop timer
+    def controlTimer(self):
+        # if timer is stopped
+        self.pushButton_save.setEnabled(True)       
+        self.webcam_Found = True          
+        if not self.timer.isActive():
+            # webCam high resolution ergab nicht bessere results..image war extrem klein..bracht noch
+            # gesonderte recherche mit speziellen auflösungen...siehe cartoonCamOnMovie e.g
+             
+            if cocr.testDevice(int(self.lineEdit_camNr.text())) == False:  # no printout if cam (0) is available
+                #toolz.msgBoxInfoOkCancel("Webcam (1) NOT found!","Webcam ISSUE - PLEASE CHECK!")
+                cocr.msgBoxInfoOkCancel("NO Webcam available","Webcam I S S U E - PLEASE CHECK!")
+                return  
+          
+            self.cap = cv2.VideoCapture(int(self.lineEdit_camNr.text()) )           
+            self.cap.set(5,30)
+            
+            # start timer
+            self.timer.start(30)    #e.g. 10
+            # update control_bt text
+            ##self.pushButton_runTest.setEnabled(False)
+            self.pushButton_save.setEnabled(True)
+            self.pushButton_StartStopCam.setText("Stop Cam")
+        # if timer is started
+        else:
+            # stop timer
+            self.timer.stop()
+            # release video capture
+            self.cap.release()
+            #self.out.release()
+            # update control_bt text
+            self.pushButton_StartStopCam.setText("Start Cam" )
+            #self.ui.image_label.setText("Camera")
+
+         
        
     # WORD file mit double click öffnen
     def openDocumentInWindows(self, path, lstWidget):
@@ -299,6 +402,7 @@ class MainWindow_ALI(QtWidgets.QMainWindow):
     
     
     def previewSelectedListObject(self):   
+        self.i_sec = 0
         logging.info(cocr.dt() + 'previewSelectedListObject')
         cur_index = self.listWidget_orderTemplates.currentRow()
         item = self.listWidget_orderTemplates.item(cur_index)   
@@ -315,73 +419,35 @@ class MainWindow_ALI(QtWidgets.QMainWindow):
             except Exception:
                 traceback.print_exc()
     
-    # gefunden.. neuen test freigen..appoval zurück setzen 
+    # gefunden.. neuen test freigen..appoval zurück setzen - run button
     def enableCamForNextDetection(self):
+        self.pushButton_runTest.setText('New Label-Scan') 
         self.pushButton_runTest.setEnabled(False)
         self.stopCauseApproved = False
-        self.frameCnt = 0
-        self.previewSelectedListObject() # reset searchstring table
-        
-
-    def loadImage(self):
-        """ This function will load the camera device, obtain the image
-            and set it to label using the setPhoto function
-        """
-        self.pushButton_save.setEnabled(True)       
-        self.webcam_Found = True          
-        
-        n = 0
-        i = 0
-        frames_to_count= 30
-        
-        if self.started:
-            self.started=False
-            self.pushButton_StartStopCam.setText('START CAM')    
-        else:
-            self.started=True           
-            self.pushButton_StartStopCam.setText('STOP CAM')
-            self.pushButton_runTest.setEnabled(False)
-            self.pushButton_save.setEnabled(True)
-            self.textBrowser_log.append('ALI-PaddleOCR will assist you in inpecting Labels..' ) #Append text to the GUI
-        
-             
-        if cocr.testDevice(int(self.lineEdit_camNr.text())) == False:  # no printout if cam (0) is available
-            #toolz.msgBoxInfoOkCancel("Webcam (1) NOT found!","Webcam ISSUE - PLEASE CHECK!")
-            self.webcam_Found = False            
-            
-        if self.webcam_Found == False :
-            cocr.msgBoxInfoOkCancel("NO Webcam available","Webcam I S S U E - PLEASE CHECK!")
-            return                 
-          
-        vid = cv2.VideoCapture(int(self.lineEdit_camNr.text()))          
-        
-        #frames_to_count=20 # original 20
-        frames_to_count= vid.get(cv2.CAP_PROP_FPS)
-        
-        print("vid.get(cv2.CAP_PROP_FPS) =" + str(frames_to_count))
-        
+        self.previewSelectedListObject() # reset searchstring table        
+        # LCD startet mit dem timer bei null ..zählt sec hoch        
+        self.i_sec = 1
+        self.lcdNumber_lcd.display(self.i_sec)
+        self.timer2.start(1000)        
+        print("current failTimer:" +  str(self.i_sec) )
        
-        #https://www.youtube.com/watch?v=oOuswkbsBCU
-        n = 0
-        i = 0
+    
+    
+    # view camera
+    def viewCam(self):
+        # read image in BGR format
+        ret, frame = self.cap.read()
         
-        while(vid.isOpened()):  
-            QtWidgets.QApplication.processEvents()    
-            ret, image = vid.read()               
+        if ret == True:       
+            self.update (frame) # zum filter window
+        # Non-Stop-Video-Stream .. 
+        framex = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        img = QImage(framex, framex.shape[1],framex.shape[0],framex.strides[0],QImage.Format_RGB888) 
+        pixmap = QtGui.QPixmap.fromImage(img)
+        pixmap = pixmap.scaled(300,300, QtCore.Qt.KeepAspectRatio)       
+        self.label_miniCamView.setPixmap(pixmap)   
         
-            if (2*n) % frames_to_count == 0:
-                self.update(image)
-                i+=1
-            n+=1
-            if ret==False:
-                break
-                    
-            #EXIT CHECKER - ckoss
-            if self.started==False :                
-                cv2.destroyAllWindows() 
-                print('Loop break')
-                break
-        
+     
             
     def update(self, capFrame):
         """ This function will update the photo according to the 
@@ -401,31 +467,35 @@ class MainWindow_ALI(QtWidgets.QMainWindow):
                     cv2.putText(self._imgPaddleOCR,'APPROVED',(50,100),font,2,(50,205,50),3)  #text,coordinate,font,size of text,color,thickness of font
                     print('GEFUNDEN') 
                     # stop camera
+                    self.timer2.stop()
                     self.stopCauseApproved = True   
                     self.pushButton_runTest.setEnabled(True)
+                    self.pushButton_save.setEnabled(False)
                     self.textBrowser_log.append( 'LABEL OK - Select New Template and press RUN!') #Append text to the GUI                   
                     self.saveProtocol()  # errFree  True  
                 else:
                     print('NICHT gefunden')
+                    #here we check the failure timeout
+                    if self.i_sec > int(self.lineEdit_timer.text()):    
+                        self.timer2.stop()
+                        self.stopCauseApproved = True   # freeze images
+                        self.pushButton_runTest.setEnabled(True)
+                        self.pushButton_save.setEnabled(False)
+                        self.textBrowser_log.append( 'LABEL Failure - Could not detect Label on object in TIME!') #Append text to the GUI                   
+                        self.saveProtocol()  # save failure protocol
+                        cocr.msgBoxInfoOkCancel("Click RUN to start a new Label-Scan when ready!","failTimer - Automatic FailureProtocol!")
                     
                 #image = imutils.resize(image,width=640)
                 frame = cv2.cvtColor(self._imgPaddleOCR, cv2.COLOR_BGR2RGB)
                 img = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888)        
                 pixmap = QtGui.QPixmap.fromImage(img)
-                pixmap = pixmap.scaled(1200, 720, QtCore.Qt.KeepAspectRatio)
+                pixmap = pixmap.scaled(1200, 720, QtCore.Qt.KeepAspectRatio)                
                 self.label_cameraLive.setPixmap(pixmap)    
             except Exception as e:
                 print(e)
                 logging.error(traceback.format_exc())    
             
-        #MINI frame  - just to see that cam is still running
-        #image = imutils.resize(capFrame,width=200)
-        frame = cv2.cvtColor(capFrame, cv2.COLOR_BGR2RGB)
-        img = QImage(frame, frame.shape[1],frame.shape[0],frame.strides[0],QImage.Format_RGB888) 
-        pixmap = QtGui.QPixmap.fromImage(img)
-        pixmap = pixmap.scaled(300,300, QtCore.Qt.KeepAspectRatio)
-        #pixmap = pixmap.scaled(1200, 720, QtCore.Qt.KeepAspectRatio)
-        self.label_miniCamView.setPixmap(pixmap)     
+          
 
 #THIS sector is needed for stand alone mode 
         

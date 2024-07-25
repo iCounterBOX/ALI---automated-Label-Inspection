@@ -1,0 +1,113 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "D:/ALL_PROJECT/a_Bosch/pyQT5_experimental/ai/py39pa/ali.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": false
+  },
+  {
+   "optionDest": "console",
+   "value": true
+  },
+  {
+   "optionDest": "icon_file",
+   "value": "D:/ALL_PROJECT/a_Bosch/pyQT5_experimental/ai/py39pa/images/webcam_icon.ico"
+  },
+  {
+   "optionDest": "clean_build",
+   "value": false
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": false
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "paddleocr"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "scipy.io"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "pyclipper"
+  },
+  {
+   "optionDest": "collect_data",
+   "value": "paddle"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "scipy"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "scipy"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "skimage"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "skimage"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "imgaug"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "imgaug"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "lmdb"
+  },
+  {
+   "optionDest": "collect_all",
+   "value": "lbdb"
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/ALL_PROJECT/a_Bosch/pyQT5_experimental/ai/py39pa/PaddleOCR;."
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": ""
+ }
+}
