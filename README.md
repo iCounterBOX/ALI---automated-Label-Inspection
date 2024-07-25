@@ -2,9 +2,13 @@
 
 Update: 26.06.24
 
-*@all\_user\_\* **ens**:inne\*nen\*ens:nen..ens*  :-)
+@all\_user\_\* **ens**:inne\*nen\*ens:nen..ens
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.001.png)
+D:\ALL\_PROJECT\a\_Factory\ALI\py39pa
+
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.001.png)
+
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.002.png)
 
 **What is ALI?**
 
@@ -19,7 +23,7 @@ In order for ALI to be able to "check", reference templates are needed (e.g. ord
 
 
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.002.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.003.png)
 
 This means that different reference templates can be stored in ALI. An ALI test then compares the stored reference document with the object that is compared to it during the test via webcam (USB cam) .
 
@@ -41,20 +45,20 @@ available here as an .EXE . It comes with all Python dependencies and can be use
 
 **Webcam :**
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.003.png)  e.g. Angetube 60FPS 1080P Webcam – quite good webcam . In principle no special requirements for the webcam !!
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.004.png)  e.g. Angetube 60FPS 1080P Webcam – quite good webcam . In principle no special requirements for the webcam !!
 
 
 **Code / run finally as EXE-File** :
 
 Originally, the plan was to make ALI available here as an EXE file. The ZIP with the exe is 4 GB - much too big for github. The good news: ALI can be easily made into an exe with auto-py-to-exe. The code is now available here in the repository. My devel environment is Anaconda + Spyder ( py39 )
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.004.png)  this json is for the auto-py-to-exe
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.005.png)  this json is for the auto-py-to-exe
 
 **Special ALI folders:**
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.005.png).. here are the images and labels “learned” via MakeSense
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.006.png).. here are the images and labels “learned” via MakeSense
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.006.png).. this is where the protocols are stored ( docx / word ). These can also be deleted or copied here, for example ...
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.007.png).. this is where the protocols are stored ( docx / word ). These can also be deleted or copied here, for example ...
 
 
 
@@ -65,16 +69,16 @@ Local path:
 
 D:/ALL\_PROJECT/a\_Boc/pyQT5\_experimental/ai/py39pa
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.007.png)  is calling the auto-py-to-exe
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.008.png)  is calling the auto-py-to-exe
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.008.png)  MUST copy some stuff into OUTPUT/EXE folder
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.009.png)  MUST copy some stuff into OUTPUT/EXE folder
 
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.009.png) option for future setup! None of those keys is currently used!
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.010.png) option for future setup! None of those keys is currently used!
 
 As ALI is most times using an external camera ( Cam 1 ? ) we set 1 as default:
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.010.png)  user can change the cam to any nr user need..
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.011.png)  user can change the cam to any nr user need..
 
 
 
@@ -84,42 +88,42 @@ Short introduction to MakeSense / <https://www.makesense.ai/>
 
 Teach in Images/labes
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.011.png)   click Get Started
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.012.png)   click Get Started
 
 Open folder with your annotation-Images ( References, Bestellvorlagen, Patterns etc,..)
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.012.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.013.png)
 
 DnD those into Makesense
 
-` `![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.013.png)
+` `![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.014.png)
 
 Click  Object Detection
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.014.png)… load Labels from File.. ![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.015.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.015.png)… load Labels from File.. ![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.016.png)
 
 Select labels:
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.016.png)  …DnD to MakeSense 
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.017.png)  …DnD to MakeSense 
 
 Start Project:
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.017.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.018.png)
 
 Now we have MakeSense open and se our Images:
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.018.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.019.png)
 
 Learn HOW to use MakeSense: <https://www.youtube.com/watch?v=shLogkPDtBk>
 
 Finally store your ANNOTATIONS in voc-Format
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.019.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.020.png)
 
 You may have a look to your generated VOC annotation files: 
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.020.png)
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.021.png)
 
 Important ..however yo generate Image/annotation. Finally it MUST be located here:
 
-![](Aspose.Words.4506171c-ffbc-4f2b-8e1b-9c8245b1ca21.021.png) That’s it .. ALI is gently processing those files J
+![](Aspose.Words.0bd4351c-5a4d-475c-8921-ba72d331771d.022.png) That’s it .. ALI is gently processing those files J
